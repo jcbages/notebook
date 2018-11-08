@@ -1,6 +1,6 @@
 struct CustomCompare {
     bool operator()(const int &v1, const int &v2) {
-        return items_rank[v1] > items_rank[v2];
+        return v1 > v2; // smaller to bigger (reverse)
     }
 };
 
