@@ -1,40 +1,62 @@
-/* Node for english lowercase letters */
+#include <bits/stdc++.h>
+using namespace std;
+#define MAXCHAR 26 // english lowercase letters
+
 struct node {
-    int edges[26];
     bool is_end;
+    vector<int> edges;
     node() {
         is_end = false;
-        memset(edges, 255, sizeof(edges));
+        edges.assign(MAXCHAR, -1);
     }
 };
 vector<node> trie;
 
-/* Given a word, add it to the trie */
-void add(int curr, const string &s) {
-    // Traverse the trie & add nodes when necessary
+// add root to the trie
+void build() {
+    trie.push_back(node());
+}
+
+// given some word s, add it to the trie
+void add(const string &s) {
+    int curr = 0;
     for (int i = 0; i < s.size(); ++i) {
-        if (trie[curr].edges[s[i]-'a'] == -1) {
-            trie[curr].edges[s[i]-'a'] = trie.size();
+        int pos = s[i]-'a';
+        if (trie[curr].edges[pos] == -1) {
             trie.push_back(node());
+            trie[curr].edges[pos] = trie.size()-1;
         }
-        curr = trie[curr].edges[s[i]-'a'];
+        curr = trie[curr].edges[pos];
     }
-    // Mark last node as an end
+    // mark last node as an end
     trie[curr].is_end = true;
 }
 
-/* Given a word, check if it exist in the trie */
-bool exist(int curr, const string &s) {
-    // Try to traverse the trie or return if node doesnt exist
+// given some word, check if it exist in the trie
+bool exist(const string &s) {
+    int curr = 0;
     for (int i = 0; i < s.size(); ++i) {
-        if (trie[curr].edges[s[i]-'a'] == -1) {
+        int pos = s[i]-'a';
+        if (trie[curr].edges[pos] == -1) {
             return false;
         }
-        curr = trie[curr].edges[s[i]-'a'];
+        curr = trie[curr].edges[pos];
     }
-    // String exist if it's an end & not a preffix
+    // string exist if it's an end (not only a preffix)
     return trie[curr].is_end;
 }
 
-/* Initialize the trie with the root node */
-void init() {trie.push_back(node());}
+int main() {
+    // build the trie
+    build();
+
+    // add some words to the trie
+    add("alabalafirstword");
+    add("alabalasecondword");
+    add("thirdword");
+
+    // query for some words existence -- true, false, false
+    cout << exist("alabalasecondword") << "\n";
+    cout << exist("thirdwor") << "\n";
+    cout << exist("notexistingword") << "\n";
+}
