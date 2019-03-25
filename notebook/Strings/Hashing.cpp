@@ -20,16 +20,13 @@ void hashing(const string &a, const string &b) {
     // print occurrences
     int m = b.size();
     for (int i = m+1; i <= n; ++i) {
-        if (mod(h[i]-mod(h[i-m]*r[m])) == h[m]) {
-            cout << i-2*m-1 << '\n';
-        }
+        if (mod(h[i]-mod(h[i-m]*r[m])) == h[m]) cout << i-2*m-1 << '\n';
     }
 }
 
 int main() {
     string a = "alabalalabala";
     string b = "bala";
-    
     // 3, 9 (0-based index)
     hashing(a, b);
 }

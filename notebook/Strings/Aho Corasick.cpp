@@ -39,11 +39,8 @@ void add(int index, const string &s) {
 void ahocorasick() {
     queue<int> q;
     for (int i = 0; i < MAXCHAR; ++i) {
-        if (trie[0].edges[i] == -1) {
-            trie[0].edges[i] = 0; // root always fail to 0
-        } else {
-            q.push(trie[0].edges[i]);
-        }
+        if (trie[0].edges[i] == -1) trie[0].edges[i] = 0;//root always fail to 0
+        else q.push(trie[0].edges[i]);
     }
     while (q.size() > 0) {
         int u = q.front(); q.pop();
@@ -51,15 +48,11 @@ void ahocorasick() {
             if (trie[u].edges[i] == -1) continue;
             // perform KMP like step
             int v = trie[u].edges[i], w = trie[u].f;
-            while (trie[w].edges[i] == -1) {
-                w = trie[w].f;
-            }
+            while (trie[w].edges[i] == -1) w = trie[w].f;
             trie[v].f = trie[w].edges[i];
             // combine occurrences
             auto out = trie[trie[v].f].out;
-            for (int pos : out) {
-                trie[v].out.insert(pos);
-            }
+            for (int pos : out) trie[v].out.insert(pos);
             q.push(v);
         }
     }
@@ -71,14 +64,10 @@ void search(const string &s) {
     for (int i = 0, curr = 0, j; i < s.size(); ++i) {
         int pos = s[i]-'a';
         // perform KMP like step
-        while (trie[curr].edges[pos] == -1) {
-            curr = trie[curr].f;
-        }
+        while (trie[curr].edges[pos] == -1) curr = trie[curr].f;
         curr = trie[curr].edges[pos];
         auto out = trie[curr].out;
-        for (int pos : out) {
-            ans.push_back({i, pos});
-        }
+        for (int pos : out) ans.push_back({i, pos});
     }
 
     // print answrs
@@ -90,16 +79,11 @@ void search(const string &s) {
 int main() {
     // build the trie
     build();
-
     // add some patterns to the trie
     string patterns[] = {"alabala", "bala", "ilibili"};
-    for (int i = 0; i < 3; ++i) {
-        add(i, patterns[i]);
-    }
-
+    for (int i = 0; i < 3; ++i) add(i, patterns[i]);
     // build the aho-corasick automaton
     ahocorasick();
-
     // search for occs of pattern in given word -- {25, 1}, {25, 0}, {60, 2}
     search("thisisatestwordwithalabalabutnotonlythatalsoalabaandilibili");
 }

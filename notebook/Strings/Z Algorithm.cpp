@@ -10,39 +10,28 @@ void zfunc(const string &a, const string &b) {
     for (int i = 1, l = 0, r = 0, k; i < n; ++i) {
         if (i > r) {
             l = r = i;
-            while (r < n && s[r-l] == s[r]) {
-                ++r;
-            }
+            while (r < n && s[r-l] == s[r]) ++r;
             z[i] = r-l;
             --r;
         } else {
             k = i-l;
-            if (z[k] < r-i+1) {
-                z[i] = z[k];
-            } else {
+            if (z[k] < r-i+1) z[i] = z[k];
+            else {
                 l = i;
-                while (r < n && s[r-l] == s[r]) {
-                    ++r;
-                }
+                while (r < n && s[r-l] == s[r]) ++r;
                 z[i] = r-l;
                 --r;
             }
         }
     }
-
     // print occurrences
     int m = b.size();
-    for (int i = 0; i < n; ++i) {
-        if (z[i] == m) {
-            cout << i-m-1 << '\n';
-        }
-    }
+    for (int i = 0; i < n; ++i) if (z[i] == m) cout << i-m-1 << '\n';
 }
 
 int main() {
     string a = "alabalalabala";
     string b = "bala";
-    
     // 3, 9 (0-based index)
     zfunc(a, b);
 }
