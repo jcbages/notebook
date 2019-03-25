@@ -1,5 +1,5 @@
 #include<bits/stdc++.h>
-using namespace std; 
+using namespace std;
 
 int chainNo = 0;  // index of current chain (last chain started)
 int chainHead[N]; // head of the chain (entry point)
@@ -14,7 +14,6 @@ void hld(int cur) {
     chainInd[cur] = chainNo;
     chainPos[cur] = chainSize[chainNo];
     chainSize[chainNo]++;
-
     int ind = -1, mai = -1;
     for (int i = 0; i < adj[cur].sz; i++) {
         if (subsize[ adj[cur][i] ] > mai) {
@@ -22,11 +21,9 @@ void hld(int cur) {
             ind = i;
         }
     }
-
     if (ind >= 0) {
         hld(adj[cur][ind]);
     }
-
     for(int i = 0; i < adj[cur].sz; i++) {
         if (i != ind) {
             chainNo++;
