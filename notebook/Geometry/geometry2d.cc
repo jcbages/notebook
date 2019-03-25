@@ -24,14 +24,11 @@ inline bool ortho( pt A, pt B, pt C, pt D ) { return same ( 0, dot( B-A, D-C ) )
 inline lf dist( pt A, pt B ) { return abs( B - A ); }
 pt inversion( lf r, pt A ) { return r*A / norm(A); }
 int get_points( pt p, pt q ) { return __gcd( abs(x(p)-x(q)), abs(y(p)-y(q)) ); }
-// 0  for collineal points ( angle = 0 )
-// 1  for angle BAX counter clockwise
-// -1 for angle BAX clockwise
 int ccw( pt X, pt A, pt B ) {
   lf c = cross( B-A, X-A );
-  if( same( c, 0.0 ) ) { return 0; }
-  if( c > EPS ) { return 1; }
-  return -1;
+  if( same( c, 0.0 ) ) { return 0; } // 0  for collineal points ( angle = 0 )
+  if( c > EPS ) { return 1; } // 1  for angle BAX counter clockwise
+  return -1; // -1 for angle BAX clockwise
 }
 lf distToLine( pt p, pt A, pt B, pt &c ) {
   lf u = dot( p-A , B-A ) / norm( B-A );
@@ -95,19 +92,15 @@ bool circleLineIntersection( pt c, lf r, pt A, pt B, pt &p1, pt &p2 ) {
   p2 = t - d*v;
   return true;
 }
-// -1 for same circles
-// 0 for no intersection
-// 1 for tangent
-// 2 for 2 points of intersection
 int intersectionCircles( pt c1, lf r1, pt c2, lf r2, pt &p1, pt &p2 ) {
-  if( samePt( c1, c2 ) && same(r1,r2) ) return -1;
+  if( samePt( c1, c2 ) && same(r1,r2) ) return -1; // -1 for same circles
   lf sr = (r1 + r2) * (r1 + r2);
   lf dr = (r1 - r2) * (r1 - r2);
   lf d = norm( c2-c1 );
-  if( d+EPS < dr || d > sr+EPS ) return 0;
+  if( d+EPS < dr || d > sr+EPS ) return 0; // 0 for no intersection
   if ( same(d,sr) || same(d,dr) ) {
     p1 = p2 = c1 + (c2-c1)/sqrt(d) * r1;
-    return 1;
+    return 1; // 1 for tangent
   }
   pt tmp;
   tmp.v[0] = (r1*r1 - r2*r2 + d ) / (2.0*sqrt(d)) ;
@@ -115,40 +108,34 @@ int intersectionCircles( pt c1, lf r1, pt c2, lf r2, pt &p1, pt &p2 ) {
   lf ang = arg( c2 - c1 );
   p1 = rot( tmp, ang ) + c1;
   p2 = refPoint( p1, c1, c2 );
-  return 2;
+  return 2; // 2 for 2 points of intersection
 }
-// P[0] must be equal to P[n]
-double perimeter(const vector<pt> &P) {
+double perimeter(const vector<pt> &P) { // P[0] must be equal to P[n]
   double result = 0.0;
   for(int i = 0; i < (int)P.size()-1; i++) result += dist( P[i],P[i+1] );
   return result;
 }
-// P[0] must be equal to P[n]
-// Area is positive if the polygon is ccw
-double signedArea(const vector<pt> &P) {
+double signedArea(const vector<pt> &P) { // P[0] must be equal to P[n]
   double result = 0.0;
   for(int i = 0; i < (int)P.size()-1; i++) result += cross( P[i],P[i+1] );
-  return result / 2.0;
+  return result / 2.0; // Area is positive if the polygon is ccw
 }
 double area(const vector<pt> &P) { return fabs(signedArea(P)); }
-// P[0] must be equal to P[n]
-bool isConvex( const vector<pt> &P) {
+bool isConvex( const vector<pt> &P) { // P[0] must be equal to P[n]
   int sz = (int) P.size(); if(sz <= 3) return false;
   bool isL = ccw(P[0], P[1], P[2]) >= 0;
   for (int i = 1; i < sz-1; i++)
     if( ( ccw(P[i], P[i+1], P[(i+2) == sz ? 1 : i+2]) >= 0 ) != isL) return false;
   return true;
 }
-// P[0] must be equal to P[n]
-pt computeCentroid(const vector<pt> &p) {
+pt computeCentroid(const vector<pt> &p) { // P[0] must be equal to P[n]
   pt c(0,0);
   lf scale = 6.0 * signedArea(p);
   for (int i = 0, j = 1; i < p.size()-1; i++, j++)
     c = c + (p[i]+p[j])*(x(p[i]) * y(p[j]) - x(p[j]) * y(p[i]));
   return c / scale;
 }
-// P[0] must be equal to P[n]
-bool isSimple(const vector<pt> &p) {
+bool isSimple(const vector<pt> &p) { // P[0] must be equal to P[n]
   for (int i = 0, j, l; i < p.size()-1; i++) {
     for (int k = i+1; k < p.size()-1; k++) {
       j = (i+1); l = (k+1);
@@ -158,13 +145,10 @@ bool isSimple(const vector<pt> &p) {
   }
   return true;
 }
-// P[0] must be equal to P[n]
-// Return 1 for interior, 0 for boundary and -1 for exterior
-// O( N )
-int inPolygon(pt X, const vector<pt> &P) {
+int inPolygon(pt X, const vector<pt> &P) { // P[0] must be equal to P[n]
   const int n = P.size(); int cnt = 0;
-  for (int i = 0; i < n-1; i++) {
-    if( segContains(X, P[i], P[i+1]) ) return 0;
+  for (int i = 0; i < n-1; i++) { // O( N )
+    if( segContains(X, P[i], P[i+1]) ) return 0; // 0 for boundary
     if( y(P[i]) <= y(X) ) {
       if( y(P[i+1]) > y(X) )
         if( !(ccw( X, P[i], P[i+1]) >= 0) ) cnt++;
@@ -173,8 +157,8 @@ int inPolygon(pt X, const vector<pt> &P) {
       if( ccw( X, P[i], P[i+1]) >= 0 ) cnt--;
     }
   }
-  if(cnt == 0) return -1;
-  else return 1;
+  if(cnt == 0) return -1; // -1 for exterior
+  else return 1; // 1 for intirior
 }
 // P[ 0 ] must be the left most (down) point
 // 0 for collinear, 1 for inside, -1 for outside
@@ -196,8 +180,7 @@ int inConvexPolygon( pt X, lf mnx, lf mxx, vector<pt> &P ) {
     return -1;
   return 1;
 }
-// O( N )
-lf diameterOfConvexPolygon( const vector<pt> &P, pt &A, pt &B ) {
+lf diameterOfConvexPolygon( const vector<pt> &P, pt &A, pt &B ) { // O( N )
   lf ans = -oo, d;
   int lo = 0, hi = 0;
   int sz = int(P.size());
@@ -243,10 +226,7 @@ vector<pt> reorganize( vector<pt> &P ) {
         s = i;
   R[ 0 ] = P[ s ];
   for( int i = (s+1)%n, j = 1; i != s; i = (i+1)%n, ++j ) {
-    if( samePt( P[i], P[(i-1+n)%n] ) ) {
-      j--;
-      continue;
-    }
+    if( samePt( P[i], P[(i-1+n)%n] ) ) { j--; continue; }
     R[ j ] = P[ i ];
   }
   R[ n-1 ] = R[ 0 ];
@@ -273,13 +253,11 @@ vector<pt> convexPolygonSum( vector<pt> &P, vector<pt> &Q ) {
   }
   while( i < n ) {
     R[ k ] = R[ k-1 ] + ( P[ i ]-P[ i-1 ] );
-    ++i;
-    ++k;
+    ++i; ++k;
   }
   while( j < m ) {
     R[ k ] = R[ k-1 ] + ( Q[ j ]-Q[ j-1 ] );
-    ++j;
-    ++k;
+    ++j; ++k;
   }
   vector<pt> T;
   T.PB( R[ 0 ] );

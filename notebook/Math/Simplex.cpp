@@ -96,16 +96,11 @@ int main() {
   };
   DOUBLE _b[m] = { 10, -4, 5, -5 };
   DOUBLE _c[n] = { 1, -1, 0 };
-
-  VVD A(m);
-  VD b(_b, _b + m);
-  VD c(_c, _c + n);
+  VVD A(m); VD b(_b, _b + m); VD c(_c, _c + n);
   for (int i = 0; i < m; i++) A[i] = VD(_A[i], _A[i] + n);
-
   LPSolver solver(A, b, c);
   VD x;
   DOUBLE value = solver.Solve(x);
-
   cerr << "VALUE: "<< value << endl;
   cerr << "SOLUTION:";
   for (size_t i = 0; i < x.size(); i++) cerr << " " << x[i];
